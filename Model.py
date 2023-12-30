@@ -2,6 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 import torch as t
+import random
 import matplotlib.pyplot as plt
 from Preprocessing import Preprocessing
 
@@ -81,12 +82,10 @@ class Model:
 
     #Given input and output examples, learn from them and give weights to be used for testing and validation
     def train(self, learning_rate, relu_negative_slope, epochs):
-
+        
+        #This is a numpy array of the adjective, the noun, its classification, and (if found) its embedding
         words = Preprocessing.no_arg()
         word_info = words.get_word2vec_embeddings()
-
-        #This is a numpy array of the adjective, the noun, its classification, and (if found) its embedding
-        word_info = self.get_word2vec_embeddings()
 
         indicies = self.get_indicies(word_info)
 
@@ -101,6 +100,7 @@ class Model:
         optimizer = t.optim.Adam((w, b, u), learning_rate)
 
         for k in range(0, epochs):
+            random.shuffle(word_info)
             for j in range(0, len(indicies) - 1):
                 for i in range(indicies[j], indicies[j] + (int(self.training*(indicies[j + 1] - indicies[j])))):
                     #If the adj-noun pair doesn't have an embedding, then just move on
@@ -133,7 +133,8 @@ class Model:
     def validate(self, learning_rate, relu_negative_slope, ephochs):
 
         #This is a numpy array of the adjective, the noun, its classification, and (if found) its embedding
-        word_info = self.get_word2vec_embeddings()
+        words = Preprocessing.no_arg()
+        word_info = words.get_word2vec_embeddings()
 
         indicies = self.get_indicies(word_info)
 
@@ -144,7 +145,7 @@ class Model:
         for j in range(0, len(indicies) - 1):
             for i in range(indicies[j] + int(self.training*(indicies[j + 1] - indicies[j])), (indicies[j] + int(self.training*(indicies[j + 1] - indicies[j])) + int(self.valid*(indicies[j + 1] - indicies[j])))):
                 try:
-                    x = t.tensor(word_info[i][3], dtype=t.float)
+                    x = t.tensor(word_info[i][3], dtype=t.float) 
                     x.requires_grad_(True)
                 except:
                     continue
@@ -165,7 +166,8 @@ class Model:
 
     def testing(self, learning_rate, relu_negative_slope, epochs):
          #This is a numpy array of the adjective, the noun, its classification, and (if found) its embedding
-        word_info = self.get_word2vec_embeddings()
+        words = Preprocessing.no_arg()
+        word_info = words.get_word2vec_embeddings()
 
         indicies = self.get_indicies(word_info)
 
@@ -195,7 +197,6 @@ class Model:
         return f1
 
 
-
-
+model1 = Model.no_arg()
     
     

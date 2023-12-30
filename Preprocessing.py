@@ -65,6 +65,8 @@ class Preprocessing:
 
             for i in range(0, len(arr)):
                 embeddings_csv.write(arr[i] + "\n")
+
+            embeddings_csv = open(os.path.join(curr_directory, 'new_embeddings.csv'), 'r')
         except:
             embeddings_csv = open(os.path.join(curr_directory, 'new_embeddings.csv'), 'r')
 
@@ -79,9 +81,9 @@ class Preprocessing:
             noun_emb = embeddings_df.loc[embeddings_df['Word'] == words[j][1], 'Embedding'].to_numpy()
 
             #np. fromstring is the best to use on space deliminated pandas series
-            adj_emb = np.fromstring(adj_emb[0], sep=' ')
             try:
                 noun_emb = np.fromstring(noun_emb[0], sep= ' ')
+                adj_emb = np.fromstring(adj_emb[0], sep=' ')
             except:
                 continue
                 
@@ -91,7 +93,7 @@ class Preprocessing:
             embedding = embedding[np.newaxis, :]
             embedding = embedding.transpose()
             words[j].append(embedding)
-        
+
         embeddings_thing.close()
         embeddings_csv.close()
         return words
