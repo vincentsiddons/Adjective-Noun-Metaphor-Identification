@@ -80,7 +80,7 @@ class Model:
         plt.show()
      
 
-    #Given input and output examples, learn from them and give weights to be used for testing and validation
+    #Given input and output examples, learn from them and give weights to be used for testing and validation. Also outputs embeddings used to get results
     def train(self, learning_rate, relu_negative_slope, epochs):
         
         #This is a numpy array of the adjective, the noun, its classification, and (if found) its embedding
@@ -128,17 +128,18 @@ class Model:
                     loss.backward(retain_graph=True)
                     optimizer.step() 
 
-        return w, b, u 
+        word_info = sorted(word_info)
+
+        return w, b, u, word_info
     
+    #Returns F1 score for set
     def validate(self, learning_rate, relu_negative_slope, ephochs):
 
         #This is a numpy array of the adjective, the noun, its classification, and (if found) its embedding
-        words = Preprocessing.no_arg()
-        word_info = words.get_word2vec_embeddings()
+
+        w, b, u, word_info = self.train(learning_rate, relu_negative_slope, ephochs)
 
         indicies = self.get_indicies(word_info)
-
-        w, b, u = self.train(learning_rate, relu_negative_slope, ephochs)
 
         predictions = []
         
@@ -160,18 +161,16 @@ class Model:
                 #The correct classification (either 1 or 0)
                 golden = word_info[i][2][0]
                 predictions.append([y, golden]) 
+
         f1 = self.calculate_F1_score(predictions)
 
         return f1
 
     def testing(self, learning_rate, relu_negative_slope, epochs):
          #This is a numpy array of the adjective, the noun, its classification, and (if found) its embedding
-        words = Preprocessing.no_arg()
-        word_info = words.get_word2vec_embeddings()
+        w, b, u, word_info = self.train(learning_rate, relu_negative_slope, epochs)
 
         indicies = self.get_indicies(word_info)
-
-        w, b, u = self.train(learning_rate, relu_negative_slope, epochs)
 
         predictions = []
         
@@ -197,6 +196,5 @@ class Model:
         return f1
 
 
-model1 = Model.no_arg()
     
     

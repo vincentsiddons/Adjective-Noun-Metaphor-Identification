@@ -96,5 +96,6 @@ class Preprocessing:
 
         embeddings_thing.close()
         embeddings_csv.close()
+        
         return words
     
